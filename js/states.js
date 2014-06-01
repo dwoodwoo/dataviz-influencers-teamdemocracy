@@ -72,7 +72,21 @@ d3.csv("./d/datatest.csv", function(data) {
            .attr('d', function(d) { return d.path; })
            .attr('stroke', 'rgba(255,255,255,.2)')
            .attr('opacity',0)
-           .attr('transform', 'translate(1000,1000)scale(0)translate(-1000,-1000)');
+           .attr('transform', 'translate(1000,1000)scale(0)translate(-1000,-1000)')
+           .on("mouseover", function(d) {
+                      console.log("hellow, mouseover");
+                      console.log("d is "+ JSON.stringify(d));
+                      console.log("you have moused over " + d.id);
+                      var nodeSelection = d3.select(this).style({opacity:'0.8'});
+                      // nodeSelection.select("text").style({opacity:'1.0'});
+                      })
+            .on("mouseout", function(d) {
+            console.log("hellow, mouseover");
+            console.log("d is "+ JSON.stringify(d));
+            console.log("you have moused over " + d.id);
+            var nodeSelection = d3.select(this).style({opacity:'1.0'});
+            // nodeSelection.select("text").style({opacity:'1.0'});
+            });
 
       p.transition().duration(500)
         .attr('fill',  function(d) { return d.color;})

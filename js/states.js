@@ -19,32 +19,24 @@ d3.csv("./d/datatest.csv", function(data) {
 ;
 
 
-      var d = [];
+      var d = [],
+          stateIdx = {};
       for (var i in states) {
         if (!states.hasOwnProperty(i)) continue;
         <!-- console.log('i = ' + i, 'states[i] = ' + states[i]); -->
-        d.push({
+        stateIdx[i] = {
           id: i,
           path: states[i],
-          <!-- color: '#'+Math.floor(Math.random()*16777215).toString(16) -->
-          color: '#a0a0a0'
-        });
+        };
+        d.push(stateIdx[i]);
       }
 
+  var colorScale = d3.scale.linear()
+  .domain([1, 10])
+  .range(['grey', 'red']);
+
   for (var i in dataset) {
-    console.log("state = " + dataset[i]['state']);
-    console.log("influence = " + dataset[i]['influence']);
-
-    myColor = dataset[i]['influence']/10;
-    myRGB = 'rgba(255,0,0,' + myColor + ')';
-
-    d.push({
-      myColor: .5,
-      id: dataset[i]['state'],
-      path: states[dataset[i]['state']],
-      <!-- color: '#'+Math.floor(Math.random()*16777215).toString(16) -->
-      color: myRGB
-    });
+    stateIdx[dataset[i].state].value = dataset[i].influence;
   }
 
 
@@ -68,7 +60,9 @@ d3.csv("./d/datatest.csv", function(data) {
       var p = g.selectAll('path').data(d);
 
       p.enter().append('path')
-           .attr('fill','green')
+           .attr('fill', function(d) {
+              return colorScale(d.value || 1);
+           })
            .attr('d', function(d) { return d.path; })
            .attr('stroke', 'rgba(255,255,255,.2)')
            .attr('opacity',0)
@@ -78,6 +72,7 @@ d3.csv("./d/datatest.csv", function(data) {
                       console.log("d is "+ JSON.stringify(d));
                       console.log("you have moused over " + d.id);
                       var nodeSelection = d3.select(this).style({opacity:'0.8'});
+
                       // nodeSelection.select("text").style({opacity:'1.0'});
                       })
             .on("mouseout", function(d) {
@@ -89,7 +84,6 @@ d3.csv("./d/datatest.csv", function(data) {
             });
 
       p.transition().duration(500)
-        .attr('fill',  function(d) { return d.color;})
                     .delay(function(d, i) { return i * 10 })
                     .attr('opacity', 1)
                     .attr('transform', 'translate(900,300)scale(1)translate(-900,-300)');
